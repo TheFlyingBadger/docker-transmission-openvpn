@@ -1,7 +1,7 @@
 
 container/Jackett/
 
-getJackett/jackett.*
+getJackett/jackett.*.*
 
 getJackett/__pycache__/
 
