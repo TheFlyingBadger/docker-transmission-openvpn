@@ -6,7 +6,6 @@ echo "This Image : '$theImage'" | tee $theLog
 echo "Master     : '$masterImage'" | tee -a $theLog 
 echo "Locale     : '$LANG'" | tee -a  $theLog 
 echo "Language   : '$LANGUAGE'" | tee -a  $theLog 
-rm Dockerfile.labels
 set -x
 docker pull $masterImage
 ./getJackett/getLatestJackett.py | tee -a  $theLog

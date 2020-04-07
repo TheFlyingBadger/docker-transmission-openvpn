@@ -3,6 +3,7 @@
 # It reads 'DockerfileNoLabels' and then adds
 #  some generated label entries
 #
+# <DockerfileNoLabels>
 FROM haugene/transmission-openvpn
 ARG container_locale=en_US.UTF-8
 ARG container_language=en_US.en
@@ -29,6 +30,7 @@ ADD  container/ /
 
 EXPOSE 9117 5050 9091 80
 CMD ["/bin/bash","-c","/volansmelesmeles/containerStartup.sh"]
+# </DockerfileNoLabels>
 #
 # LABEL entries added by createLabelFile.py
 #
