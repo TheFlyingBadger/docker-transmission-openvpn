@@ -34,7 +34,7 @@ CMD ["/bin/bash","-c","/volansmelesmeles/containerStartup.sh"]
 #
 # LABEL entries added by createLabelFile.py
 #
+LABEL maintainer="jon@badger.shoes"
 LABEL volansmelesmeles.transmissionopenvpn.base.image="haugene/transmission-openvpn:latest"
 LABEL volansmelesmeles.transmissionopenvpn.jackett.version="v0.14.447"
 LABEL volansmelesmeles.transmissionopenvpn.jackett.url="https://github.com/Jackett/Jackett/releases/download/v0.14.447/Jackett.Binaries.LinuxAMDx64.tar.gz"
-LABEL maintainer="jon@badger.shoes"
