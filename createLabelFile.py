@@ -36,14 +36,14 @@ def main():
     for i in theImages:
         labels = i.labels
 
-    labels = addLabel(labels, 'base.image',baseImage)
-    labels = addLabel(labels, 'jackett.version',getJackettVer())
-    labels = addLabel(labels, 'jackett.url',getJackettURL())
-
     if 'maintainer' in labels and labels['maintainer'] is not None and len(labels['maintainer']) > 0:
         labels = addLabel(labels, 'base.image.maintainer',labels['maintainer'])
 
     labels['maintainer'] = 'jon@badger.shoes'
+
+    labels = addLabel(labels, 'base.image',baseImage)
+    labels = addLabel(labels, 'jackett.version',getJackettVer())
+    labels = addLabel(labels, 'jackett.url',getJackettURL())
 
     fnameNoLabels = "DockerfileNoLabels"
     with open (fnameNoLabels, "r") as f:
