@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Welcome to nginx!</title>
+        <style>
+            body {
+                width: 35em;
+                margin: 0 auto;
+                font-family: Tahoma, Verdana, Arial, sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to <SPAN id="welcome">nginx</SPAN></h1>
+
+        <UL>
+            <LI><A TARGET="_blank" ID="trans" href="">Transmission Web UI</A></LI>
+            <LI><A TARGET="_blank" ID="flexget" href="">FlexGet</A></LI>
+            <LI><A TARGET="_blank" ID="jackett" href="">Jackett</A></LI>
+        </UL>
+
+        <script>
+            var baseUrl = location.protocol + "//" + location.hostname;
+            
+            document.title = location.hostname
+            document.getElementById("welcome").innerHTML = location.hostname
+
+            document.getElementById("trans").href   = baseUrl.concat(":9091/transmission");
+            document.getElementById("flexget").href = baseUrl.concat(":5050");
+            document.getElementById("jackett").href = baseUrl.concat(":9117");
+        </script>
+
+    </body>
+</html>
