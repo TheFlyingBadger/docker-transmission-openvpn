@@ -1,0 +1,8 @@
+
+container/Jackett/
+
+getJackett/jackett.*
+
+getJackett/__pycache__/
+
+/latestBuild.log

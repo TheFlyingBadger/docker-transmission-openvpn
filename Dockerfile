@@ -20,7 +20,7 @@ ENV LANG $container_locale
 ENV LANGUAGE $container_language
 ENV LC_ALL $container_locale
 # Set the locale  
-ADD  root/ /
+ADD  container/ /
 
-EXPOSE 9117 5050 9091
+EXPOSE 9117 5050 9091 80
 CMD ["/bin/bash","-c","/volansmelesmeles/containerStartup.sh"]

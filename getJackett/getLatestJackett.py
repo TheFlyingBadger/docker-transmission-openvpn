@@ -55,7 +55,7 @@ def getFilenames():
     saveFolder = os.path.dirname(os.path.realpath(__file__))
     if not os.path.exists (saveFolder):
         os.makedirs(saveFolder)
-    return [saveFolder, os.path.join (saveFolder,'jackett.tar.gz'), os.path.join (saveFolder,'jackett.url.txt'), saveFolder, os.path.abspath(os.path.join(saveFolder,'..','root','Jackett')), os.path.join (saveFolder,'jackett.ver.txt')]
+    return [saveFolder, os.path.join (saveFolder,'jackett.tar.gz'), os.path.join (saveFolder,'jackett.url.txt'), saveFolder, os.path.abspath(os.path.join(saveFolder,'..','container','Jackett')), os.path.join (saveFolder,'jackett.ver.txt')]
 
 def deleteFile (fName : str):    
     try:
