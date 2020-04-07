@@ -33,17 +33,30 @@ def main():
     client = connect()
     theImages = client.images.list(baseImage)
     labels = {}
+    attrs  = {}
     for i in theImages:
+        attrs  = i.attrs
         labels = i.labels
 
     if 'maintainer' in labels and labels['maintainer'] is not None and len(labels['maintainer']) > 0:
         labels = addLabel(labels, 'base.image.maintainer',labels['maintainer'])
 
-    labels['maintainer'] = 'jon@badger.shoes'
-
     labels = addLabel(labels, 'base.image',baseImage)
+
+    for k in ['RepoTags','RepoDigests']:
+        if k in attrs and attrs[k] is not None and len(attrs[k]) > 0:
+            labels = addLabel(labels, f'base.image.{k}',';'.join(attrs[k]))
+
+    for k in ['Architecture','Os']:
+        if k in attrs and attrs[k] is not None:
+            labels = addLabel(labels, f'base.image.{k}',attrs[k])
+
+    labels['maintainer'] = 'jon@badger.shoes'
     labels = addLabel(labels, 'jackett.version',getJackettVer())
     labels = addLabel(labels, 'jackett.url',getJackettURL())
+    
+    # for key in attrs:
+    #     print (key, "=",attrs[key])
 
     fnameNoLabels = "DockerfileNoLabels"
     with open (fnameNoLabels, "r") as f:
@@ -64,13 +77,17 @@ def main():
     dockerfile.append ("# LABEL entries added by createLabelFile.py")
     dockerfile.append ("#")
 
+    labelLines = []
     def thisLabel (k, v):
-        dockerfile.append (f'LABEL {k}=\"{v}\"')
+        labelLines.append (f'LABEL {k}=\"{v}\"')
 
 
     for key in labels:
         escapedVal = labels[key].replace('"','\"')
         thisLabel (key, escapedVal)
+    labelLines = list(sorted(labelLines))
+    for l in labelLines:
+        dockerfile.append (l)
 
     for ix,line in enumerate(dockerfile):
         if not (line[-1] == "\n"):
