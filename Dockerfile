@@ -22,9 +22,13 @@ RUN  apt-get -qqq update  > /dev/null \
     && apt-get -q -q autoclean  > /dev/null \
     && ln -s /etc/transmission/environment-variables.sh /etc/profile.d/02-transmission-environment-variables.sh  \
     && chmod +x /etc/transmission/userSetup.sh
-ENV LANG $container_locale
-ENV LANGUAGE $container_language
-ENV LC_ALL $container_locale
+ENV LANG $container_locale \
+    LANGUAGE $container_language \
+    LC_ALL $container_locale \
+    TRANSMISSION_HOME=/config/transmission \
+    UFW_EXTRA_PORTS=9117,5050,80 \
+    XDG_CONFIG_HOME=/config
+
 # Set the locale  
 ADD  container/ /
 
@@ -34,11 +38,11 @@ CMD ["/bin/bash","-c","/volansmelesmeles/containerStartup.sh"]
 #
 # LABEL entries added by createLabelFile.py
 #
-LABEL maintainer="jon@badger.shoes"
-LABEL volansmelesmeles.transmissionopenvpn.base.image.architecture="amd64"
-LABEL volansmelesmeles.transmissionopenvpn.base.image.os="linux"
-LABEL volansmelesmeles.transmissionopenvpn.base.image.repodigests="haugene/transmission-openvpn@sha256:5c83c3a786f21afbc8c41e9731db8f9a92d8788b6ee5c2b433b869111ff5226b"
-LABEL volansmelesmeles.transmissionopenvpn.base.image.repotags="haugene/transmission-openvpn:latest"
-LABEL volansmelesmeles.transmissionopenvpn.base.image="haugene/transmission-openvpn:latest"
-LABEL volansmelesmeles.transmissionopenvpn.jackett.url="https://github.com/Jackett/Jackett/releases/download/v0.14.447/Jackett.Binaries.LinuxAMDx64.tar.gz"
-LABEL volansmelesmeles.transmissionopenvpn.jackett.version="v0.14.447"
+LABEL maintainer="jon@badger.shoes" \
+      volansmelesmeles.transmissionopenvpn.base.image.architecture="amd64" \
+      volansmelesmeles.transmissionopenvpn.base.image.os="linux" \
+      volansmelesmeles.transmissionopenvpn.base.image.repodigests="haugene/transmission-openvpn@sha256:3ada789c4f412ac5bf56bfc0b1c2f4cc1322387c12e01d8821915992f24d8d89" \
+      volansmelesmeles.transmissionopenvpn.base.image.repotags="haugene/transmission-openvpn:latest" \
+      volansmelesmeles.transmissionopenvpn.base.image="haugene/transmission-openvpn:latest" \
+      volansmelesmeles.transmissionopenvpn.jackett.url="https://github.com/Jackett/Jackett/releases/download/v0.14.459/Jackett.Binaries.LinuxAMDx64.tar.gz" \
+      volansmelesmeles.transmissionopenvpn.jackett.version="v0.14.459"
