@@ -16,9 +16,13 @@ RUN  apt-get -qqq update  > /dev/null \
     && apt-get -q -q autoclean  > /dev/null \
     && ln -s /etc/transmission/environment-variables.sh /etc/profile.d/02-transmission-environment-variables.sh  \
     && chmod +x /etc/transmission/userSetup.sh
-ENV LANG $container_locale
-ENV LANGUAGE $container_language
-ENV LC_ALL $container_locale
+ENV LANG $container_locale \
+    LANGUAGE $container_language \
+    LC_ALL $container_locale \
+    TRANSMISSION_HOME=/config/transmission \
+    UFW_EXTRA_PORTS=9117,5050,80 \
+    XDG_CONFIG_HOME=/config
+
 # Set the locale  
 ADD  container/ /
 
