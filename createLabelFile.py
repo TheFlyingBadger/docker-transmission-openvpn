@@ -29,6 +29,7 @@ def getJackettURL():
     return getFileContents ('getJackett/jackett.url.txt')
 
 def main():
+    
     baseImage = 'haugene/transmission-openvpn:latest'
     client = connect()
     theImages = client.images.list(baseImage)
@@ -90,7 +91,6 @@ def main():
         labelLine  = "LABEL "
         labelLine += " \\\n      ".join(labelLines)
         dockerfile.append(labelLine)
-        
 
     for ix,line in enumerate(dockerfile):
         if not (line[-1] == "\n"):
