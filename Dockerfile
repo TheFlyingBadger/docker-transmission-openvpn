@@ -5,7 +5,7 @@
 #
 # <DockerfileNoLabels>
 FROM haugene/transmission-openvpn
-ARG container_locale=en_US.UTF-8
+ARG container_locale=en_US.UTF-8 
 ARG container_language=en_US.en
 RUN  apt-get -qqq update  > /dev/null \
     && apt-get -qqq -y install supervisor net-tools lsof inotify-tools python3-pip python3 locales nginx nano > /dev/null \
