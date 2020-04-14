@@ -80,7 +80,7 @@ def main():
 
     labelLines = []
     def thisLabel (k, v):
-        labelLines.append (f'{k}=\"{v}\"')
+        labelLines.append (f'LABEL {k}=\"{v}\"')
 
     for key in labels:
         escapedVal = labels[key].replace('"','\"')
@@ -88,9 +88,8 @@ def main():
 
     if len(labelLines) > 0:
         labelLines = list(sorted(labelLines))
-        labelLine  = "LABEL "
-        labelLine += " \\\n      ".join(labelLines)
-        dockerfile.append(labelLine)
+        for l in labelLines:
+            dockerfile.append(f"{l}\n")
 
     for ix,line in enumerate(dockerfile):
         if not (line[-1] == "\n"):

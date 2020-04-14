@@ -7,8 +7,8 @@ from  datetime import datetime
 THISFILE : str = os.path.realpath(__file__)
 BASE_DIR : str = '/etc/openvpn/'
 LOG_PATH : str = '/config/log/transmission-openvpn/openvpn.log'
-APPEND_HEADER : str = f'# <{THISFILE}>\n'
-APPEND_FOOTER : str = f'# </{THISFILE}>\n'
+APPEND_HEADER : str = f'# <{THISFILE}>'
+APPEND_FOOTER : str = f'# </{THISFILE}>'
 
 P_USER   : str = ""
 P_GROUP  : str = ""
@@ -21,6 +21,9 @@ def getTheFiles(thisPath : str):
 
 
 def doFile (theFile):
+
+    global P_USER,P_GROUP
+
     with open (theFile,'r') as f:
         lines = f.readlines()
 
@@ -29,7 +32,8 @@ def doFile (theFile):
     else: # no LF on the end of the last line of the file
         theLine = "\n"
     theLine += APPEND_HEADER
-    lines.append (theLine)
+    extraLines = []
+    extraLines.append (theLine)
     fileChanged = False
 
     if ( (P_USER  is not None and len(P_USER)  > 0)
@@ -42,9 +46,9 @@ def doFile (theFile):
              ) == 0
          )
        ):
-        lines.append ('# Downgrade privileges after initialization\n')
-        lines.append (f'user {P_USER}\n')
-        lines.append (f'group {P_GROUP}\n')
+        extraLines.append ('# Downgrade privileges after initialization')
+        extraLines.append (f'user {P_USER}')
+        extraLines.append (f'group {P_GROUP}')
         fileChanged = True
 
     if len([l for l in lines
@@ -54,14 +58,13 @@ def doFile (theFile):
             ]
           ) == 0: # no "log" records
 
-        lines.append (f'log-append "{LOG_PATH}"\n')
+        extraLines.append (f'log-append "{LOG_PATH}"')
         fileChanged = True
-        
-    lines.append (APPEND_FOOTER)
-    
+
     if fileChanged:
+        extraLines.append (APPEND_FOOTER)
         with open (theFile,'a') as f:
-            f.write(theLine)
+            f.write('\n'.join(extraLines))
     lines   = None
     return fileChanged
 
@@ -69,13 +72,24 @@ def main():
 
     global P_USER,P_GROUP
 
-    P_USER  = os.getenv('runUser')
-    P_GROUP = os.getenv('runGroup')
+    P_USER           = os.getenv('runUser')
+    P_GROUP          = os.getenv('runGroup')
+    OPENVPN_PROVIDER = os.getenv('OPENVPN_PROVIDER')
 
-    files     = getTheFiles(BASE_DIR)
+    _print (f"Run User         : {P_USER}")
+    _print (f"Run Group        : {P_GROUP}")
+    _print (f"OpenVPN Provider : {OPENVPN_PROVIDER}")
+
     filesDone = []
     padLen    = 0
 
+    if OPENVPN_PROVIDER is None or len(OPENVPN_PROVIDER) == 0:
+        providerPath = BASE_DIR
+    else:
+        providerPath = os.path.join(BASE_DIR,OPENVPN_PROVIDER)
+        
+    files        = getTheFiles(providerPath)
+        
     for f in files:
         filesDone.append (dict(file=f,done=doFile(f)))
         if len(f) > padLen:

@@ -1,11 +1,10 @@
 #!/bin/bash
 . /etc/transmission/userSetup.sh > /dev/null
 
-mkdir -p -v /config/log/supervisor /config/log/nginx/ /config/log/transmission-openvpn /config/log/jackett /config/log/flexget /config/supervisor
+mkdir -p -v /config/log/supervisor /config/log/nginx/ /config/log/transmission-openvpn /config/log/jackett /config/log/flexget /config/supervisor /config/log/addTrackers/
 
 export runUser=`id -nu ${PUID}`
 export runGroup=`id -ng ${PGID}`
-
 
 if [ ! -d "/config/nginx" ]; then
     mv /etc/nginx /config/.
@@ -44,6 +43,27 @@ fi
 if [ -f "/config/flexget/.config-lock" ]; then
     rm /config/flexget/.config-lock
 fi
+
+if [ ! -d "/data/transmission-home" ]; then
+    ln -s /config/transmission /data/transmission-home
+fi
+
+mkdir -p -v /config/tinyproxy
+tinyproxyConf=/config/tinyproxy/tinyproxy.conf
+if [ ! -f "${tinyproxyConf}" ]; then
+    mv /etc/tinyproxy/tinyproxy.conf /config/tinyproxy/.
+    ln -s $tinyproxyConf /etc/tinyproxy/tinyproxy.conf 
+fi
+
+if [ ! -d /config/tinyproxy/tinyproxy ]; then
+    mv /usr/share/tinyproxy /config/tinyproxy/.
+    ln -s /config/tinyproxy/tinyproxy /usr/share/tinyproxy
+fi
+sed -i -e 's=/var/log/tinyproxy=/config/log/transmission-openvpn=g' $tinyproxyConf
+ln -s /config/log/transmission-openvpn/tinyproxy.log /var/log/tinyproxy.log
+
+# stop the "sed" calls in tinyproxy start.sh from breaking our symlink
+sed -i -e 's,sed -i -e,sed -i --follow-symlinks -e,g' /opt/tinyproxy/start.sh 
 
 chown -R $PUID:$PGID /Jackett /config
 su -s /bin/bash -c "python3 /volansmelesmeles/scripts/copyContents.py" ${runUser}
