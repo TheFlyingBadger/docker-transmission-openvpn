@@ -13,9 +13,14 @@ from urllib.parse   import urlunparse
 from datetime       import datetime
 
 headers = None
-url = "https://github.com/Jackett/Jackett/releases/latest"
+url : str = "https://github.com/Jackett/Jackett/releases/latest"
 
+architectureLinuxAMDx64 : str = "LinuxAMDx64"
+architectureLinuxARM32  : str = "LinuxARM32"
+architectureLinuxARM64  : str = "LinuxARM64"
 
+    
+    
 def _print (s : str):
     print (f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} : {s}')
 
@@ -29,7 +34,7 @@ def getSize(start_path = '.'):
                 total_size += os.path.getsize(fp)
     return total_size
 
-def getDownloadURL():
+def getDownloadURL(desiredArchitecture : str):
 
     global headers
 
@@ -42,20 +47,20 @@ def getDownloadURL():
     req = requests.get(url, headers)
     soup = BeautifulSoup(req.content, 'html.parser')
 
-    thingy = soup.findAll('span', text = re.compile('(Jackett\.Binaries\.LinuxAMDx64\.tar\.gz)'), attrs = {'class','pl-2'})
+    thingy = soup.findAll('span', text = re.compile(f'(Jackett\.Binaries\.{desiredArchitecture}\.tar\.gz)'), attrs = {'class','pl-2'})
 
     if not len(thingy) == 1:
-        raise Exception ("Not able to find span")
+        raise Exception (f"Not able to find span for \'{desiredArchitecture}\'")
     p = urlunparse([o.scheme, o.netloc, thingy[0].parent["href"], None, None, None])
     
     return p
 
 
-def getFilenames():
+def getFilenames(desiredArchitecture : str):
     saveFolder = os.path.dirname(os.path.realpath(__file__))
     if not os.path.exists (saveFolder):
         os.makedirs(saveFolder)
-    return [saveFolder, os.path.join (saveFolder,'jackett.tar.gz'), os.path.join (saveFolder,'jackett.url.txt'), saveFolder, os.path.abspath(os.path.join(saveFolder,'..','container','Jackett')), os.path.join (saveFolder,'jackett.ver.txt')]
+    return [saveFolder, os.path.join (saveFolder,f'jackett.{desiredArchitecture}.tar.gz'), os.path.join (saveFolder,'jackett.{desiredArchitecture}.url.txt'), saveFolder, os.path.abspath(os.path.join(saveFolder,'..','container','Jackett')), os.path.join (saveFolder,f'jackett.{desiredArchitecture}.ver.txt')]
 
 def deleteFile (fName : str):    
     try:
@@ -73,12 +78,20 @@ def versionFromURL (url : str) -> str:
     return version
 
 
-def getJackett  (extractFile    : bool = True
+def getJackett  (desiredArchitecture : str  = ""
                 ,forceDownload  : bool = False
                 ):
 
-    releaseFilename = getFilenames()
-    releaseURL      = getDownloadURL()
+    if desiredArchitecture not in [architectureLinuxAMDx64
+                                  ,architectureLinuxARM32
+                                  ,architectureLinuxARM64
+                                  ]:
+        raise Exception (f"Invalid desiredArchitecture \'{desiredArchitecture}\'")
+          
+
+           
+    releaseFilename = getFilenames(desiredArchitecture)
+    releaseURL      = getDownloadURL(desiredArchitecture)
     releaseVersion  = versionFromURL (releaseURL)
 
     outLines =  [f"Page URL         : {url}"
@@ -130,17 +143,13 @@ def getJackett  (extractFile    : bool = True
             f.write(r.content)
     _print (f"Archive Size     : {humanize.naturalsize(archiveSize)}")
 
-    if  (extractFile
-     and (freshDownload or not os.path.exists (releaseFilename[4]))
-        ):
-        try:
-            shutil.rmtree(releaseFilename[4])
-        except FileNotFoundError:
-            pass
-        with tarfile.open(releaseFilename[1]) as tar:
-            tar.extractall(path=os.path.abspath(os.path.join(releaseFilename[4],'..')))
-    else:
-        _print ('                   - Not extracting archive')
+    try:
+        shutil.rmtree(releaseFilename[4])
+    except FileNotFoundError:
+        pass
+    with tarfile.open(releaseFilename[1]) as tar:
+        tar.extractall(path=os.path.abspath(os.path.join(releaseFilename[4],'..')))
+           
     with open(releaseFilename[5],'w') as f:
         f.write(releaseVersion)
     if os.path.exists (releaseFilename[4]):
@@ -150,4 +159,4 @@ def getJackett  (extractFile    : bool = True
     _print (sepLine)
 
 if __name__ == '__main__':
-   getJackett()
+   getJackett(desiredArchitecture = architectureLinuxAMDx64)
